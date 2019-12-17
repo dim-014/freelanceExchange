@@ -5,14 +5,24 @@ document.addEventListener('DOMContentLoaded', () => {
     const blockCustomer = document.getElementById('block-customer');
     const blockFreelancer = document.getElementById('block-freelancer');
     const blockChoice = document.getElementById('block-choice');
+    const btnExit = document.getElementById('btn-exit');
 
     customer.addEventListener('click', () => {
-        blockCustomer.style.display = 'block';
         blockChoice.style.display = 'none';
+        blockCustomer.style.display = 'block';
+        btnExit.style.display = 'block';
     });
 
     freelancer.addEventListener('click', () => {
-        blockFreelancer.style.display = 'block';
         blockChoice.style.display = 'none';
+        blockFreelancer.style.display = 'block';
+        btnExit.style.display = 'block';
+    });
+
+    btnExit.addEventListener('click', () => {
+        btnExit.style.display = 'none';
+        blockCustomer.style.display = 'none';
+        blockFreelancer.style.display = 'none';
+        blockChoice.style.display = 'block';
     });
 })
