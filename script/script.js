@@ -8,6 +8,7 @@ document.addEventListener('DOMContentLoaded', () => {
     const btnExit = document.getElementById('btn-exit');
     const formCustomer = document.getElementById('form-customer');
 
+    const orders = [];
 
     customer.addEventListener('click', () => {
         blockChoice.style.display = 'none';
@@ -35,9 +36,16 @@ document.addEventListener('DOMContentLoaded', () => {
 
         for (const elem of formCustomer.elements) {
             if ((elem.tagName === 'INPUT' && elem.type !== 'radio') || (elem.type === 'radio' && elem.checked) || elem.tagName === 'TEXTAREA') {
+
                 obj[elem.name] = elem.value;
+
+                if (elem.type !== 'radio') {
+                    elem.value = '';
+                }
             }
         }
+
+        orders.push(obj);
 
     });
 
