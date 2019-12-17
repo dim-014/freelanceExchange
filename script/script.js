@@ -34,11 +34,12 @@ document.addEventListener('DOMContentLoaded', () => {
         const obj = {};
 
         for (const elem of formCustomer.elements) {
-            if (elem.tagName === 'INPUT') {
+            if ((elem.tagName === 'INPUT' && elem.type !== 'radio') || (elem.type === 'radio' && elem.checked)) {
                 obj[elem.name] = elem.value;
             }
         }
-    });
 
+
+    });
 
 })
