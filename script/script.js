@@ -64,6 +64,8 @@ document.addEventListener('DOMContentLoaded', () => {
             }
         };
 
+        formCustomer.reset();
+
         orders.push(obj);
         console.log(orders);
 
