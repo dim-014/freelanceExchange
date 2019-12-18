@@ -10,6 +10,7 @@ document.addEventListener('DOMContentLoaded', () => {
     const ordersTable = document.getElementById('orders');
     const modalOrder = document.getElementById('order_read');
     const modalOrderActive = document.getElementById('order_active');
+    const modalClose = document.querySelector('.close');
 
     const orders = [];
 
@@ -19,18 +20,41 @@ document.addEventListener('DOMContentLoaded', () => {
 
         orders.forEach((order, i) => {
             ordersTable.innerHTML += `
-                            <tr class="order" data-number-order="${i}">
-                                <td>${i+1}</td>
-                                <td>${order.title}</td>
-                                <td class="${order.currency}"></td>
-                                <td>${order.deadline}</td>
-                            </tr>`;
+                                <tr class="order" data-number-order="${i}">
+                                    <td>${i+1}</td>
+                                    <td>${order.title}</td>
+                                    <td class="${order.currency}"></td>
+                                    <td>${order.deadline}</td>
+                                </tr>`;
         });
     };
 
     const openModal = (numberOrder) => {
         const order = orders[numberOrder];
         const modal = order.active ? modalOrderActive : modalOrder;
+
+        // получаем элементы модального окна по классам
+        const firstNameBlock = document.querySelector('.firstName');
+        const titleBlock = document.querySelector('.modal-title');
+        const emailBlock = document.querySelector('.email');
+        const descriptionBlock = document.querySelector('.description');
+        const deadlineBlock = document.querySelector('.deadline');
+        const currencyBlock = document.querySelector('.currency_img');
+        const countBlock = document.querySelector('.count');
+        const phoneBlock = document.querySelector('.phone');
+
+        titleBlock.textContent = order.title;
+        firstNameBlock.textContent = order.firstName;
+        emailBlock.textContent = order.email;
+        emailBlock.setAttribute('href', `mailto: ${email}`);
+        descriptionBlock.textContent = order.description;
+        deadlineBlock.textContent = order.deadline;
+        currencyBlock.classList.add('.currency');
+        countBlock.textContent = order.amount;
+        phoneBlock.textContent = order.phone;
+        phoneBlock.setAttribute('href', `tel: ${phone}`);
+
+        modal.style.display = 'block';
     };
 
     ordersTable.addEventListener('click', (event) => {
@@ -40,6 +64,12 @@ document.addEventListener('DOMContentLoaded', () => {
             openModal(targetOrder.dataset.numberOrder);
         }
     })
+
+    // закрываем модальное окно
+    modalClose.addEventListener('click', () => {
+        const currentModal = event.target.closest('.modal');
+        currentModal.style.display = 'none';
+    });
 
     customer.addEventListener('click', () => {
         blockChoice.style.display = 'none';
