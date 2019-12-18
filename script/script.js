@@ -34,6 +34,25 @@ document.addEventListener('DOMContentLoaded', () => {
 
         const obj = {};
 
+        /*
+        [...formCustomer.elements].forEach((elem) => {
+            if ((elem.tagName === 'INPUT' && elem.type !== 'radio') || (elem.type === 'radio' && elem.checked) || elem.tagName === 'TEXTAREA') {
+
+                obj[elem.name] = elem.value;
+
+                if (elem.type !== 'radio') {
+                    elem.value = '';
+                }
+            }
+        });
+                    альтернативный способ перебора элементов через forEach
+        */
+
+        /*
+        const elements = [...formCustomer.elements].filter((elem) => ((elem.tagName === 'INPUT' && elem.type !== 'radio') || (elem.type === 'radio' && elem.checked) || elem.tagName === 'TEXTAREA'));
+                    альтернативный способ перебора элементов через filter
+        */
+
         for (const elem of formCustomer.elements) {
             if ((elem.tagName === 'INPUT' && elem.type !== 'radio') || (elem.type === 'radio' && elem.checked) || elem.tagName === 'TEXTAREA') {
 
@@ -43,9 +62,10 @@ document.addEventListener('DOMContentLoaded', () => {
                     elem.value = '';
                 }
             }
-        }
+        };
 
         orders.push(obj);
+        console.log(orders);
 
     });
 
