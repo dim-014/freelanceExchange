@@ -13,8 +13,11 @@ document.addEventListener('DOMContentLoaded', () => {
         const modalOrderActive = document.getElementById('order_active');
         const modalClose = document.querySelector('.close');
 
-        // создал массив, в котором будут сохраняться заказы
-        const orders = [];
+        const orders = JSON.parse(localStorage.getItem('freeOrders')) || [];
+
+        const toStorage = () => {
+            localStorage.setItem('freeOrders', JSON.stringify(orders));
+        };
 
         // функция составления таблицы с заказами из вышесозданного массива
         const renderOrders = () => {
@@ -23,7 +26,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
                 orders.forEach((order, i) => {
                     ordersTable.innerHTML += `
-                        <tr class="order" data-number-order="${i}">
+                        <tr class="order ${order.active ? 'taken' : ''}" data-number-order="${i}">
                                 <td>${i+1}</td>
                                 <td>${order.title}</td>
                                 <td class="${order.currency}"></td>
@@ -36,6 +39,31 @@ document.addEventListener('DOMContentLoaded', () => {
                 const target = event.target;
                 const modal = target.closest('.order-modal');
                 const order = orders[modal.id];
+
+                const baseAction = () => {
+                    modal.style.display = 'none';
+                    toStorage();
+                    renderOrders();
+                }
+
+                if (target.closest('.close') || target === modal) {
+                    modal.style.display = 'none';
+                }
+
+                if (target.classList.contains('get-order')) {
+                    order.active = true;
+                    baseAction();
+                }
+
+                if (target.id === 'capitulation') {
+                    order.active = false;
+                    baseAction();
+                }
+
+                if (target.id === 'ready') {
+                    orders.splice(orders.indexOf(order), 1);
+                    baseAction();
+                }
         }
 
         // функция для открытия модального окна с заказами
@@ -84,12 +112,6 @@ document.addEventListener('DOMContentLoaded', () => {
                         openModal(targetOrder.dataset.numberOrder);
                     }
         })
-
-        // закрываем модальное окно
-        modalClose.addEventListener('click', () => {
-            const currentModal = event.target.closest('.modal');
-            currentModal.style.display = 'none';
-        });
 
         // обработчики события 
         customer.addEventListener('click', () => {
@@ -152,6 +174,8 @@ document.addEventListener('DOMContentLoaded', () => {
             formCustomer.reset();
 
             orders.push(obj);
+
+            toStorage();
 
         });
 
