@@ -12,8 +12,10 @@ document.addEventListener('DOMContentLoaded', () => {
     const modalOrderActive = document.getElementById('order_active');
     const modalClose = document.querySelector('.close');
 
+    // создал массив, в котором будут сохраняться заказы
     const orders = [];
 
+    // функция составления таблицы с заказами из вышесозданного массива
     const renderOrders = () => {
 
         ordersTable.textContent = '';
@@ -29,6 +31,7 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     };
 
+    // функция для открытия модального окна с заказами
     const openModal = (numberOrder) => {
         const order = orders[numberOrder];
         const modal = order.active ? modalOrderActive : modalOrder;
@@ -46,17 +49,18 @@ document.addEventListener('DOMContentLoaded', () => {
         titleBlock.textContent = order.title;
         firstNameBlock.textContent = order.firstName;
         emailBlock.textContent = order.email;
-        emailBlock.setAttribute('href', `mailto: ${email}`);
+        emailBlock.textContent = order.email;
+        emailBlock.href = 'mailto:' + order.email;
         descriptionBlock.textContent = order.description;
         deadlineBlock.textContent = order.deadline;
-        currencyBlock.classList.add('.currency');
+        currencyBlock.classList.add(order.currency);
         countBlock.textContent = order.amount;
-        phoneBlock.textContent = order.phone;
-        phoneBlock.setAttribute('href', `tel: ${phone}`);
+        phoneBlock.href = 'tel:' + order.phone;
 
         modal.style.display = 'block';
     };
 
+    // функция делегирования
     ordersTable.addEventListener('click', (event) => {
         const target = event.target;
         const targetOrder = target.closest('.order');
@@ -71,6 +75,7 @@ document.addEventListener('DOMContentLoaded', () => {
         currentModal.style.display = 'none';
     });
 
+    // обработчики события 
     customer.addEventListener('click', () => {
         blockChoice.style.display = 'none';
         blockCustomer.style.display = 'block';
@@ -96,6 +101,18 @@ document.addEventListener('DOMContentLoaded', () => {
 
         const obj = {};
 
+        // сбор данных из формы и перебор
+        for (const elem of formCustomer.elements) {
+            if ((elem.tagName === 'INPUT' && elem.type !== 'radio') || (elem.type === 'radio' && elem.checked) || elem.tagName === 'TEXTAREA') {
+
+                obj[elem.name] = elem.value;
+
+                if (elem.type !== 'radio') {
+                    elem.value = '';
+                }
+            }
+        };
+
         /*
         [...formCustomer.elements].forEach((elem) => {
             if ((elem.tagName === 'INPUT' && elem.type !== 'radio') || (elem.type === 'radio' && elem.checked) || elem.tagName === 'TEXTAREA') {
@@ -115,21 +132,10 @@ document.addEventListener('DOMContentLoaded', () => {
                     альтернативный способ перебора элементов через filter
         */
 
-        for (const elem of formCustomer.elements) {
-            if ((elem.tagName === 'INPUT' && elem.type !== 'radio') || (elem.type === 'radio' && elem.checked) || elem.tagName === 'TEXTAREA') {
-
-                obj[elem.name] = elem.value;
-
-                if (elem.type !== 'radio') {
-                    elem.value = '';
-                }
-            }
-        };
-
+        // очистка формы
         formCustomer.reset();
 
         orders.push(obj);
-        console.log(orders);
 
     });
 
