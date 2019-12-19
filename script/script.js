@@ -13,13 +13,25 @@ document.addEventListener('DOMContentLoaded', () => {
         const modalOrderActive = document.getElementById('order_active');
         const modalClose = document.querySelector('.close');
 
+        // прописываем Local Storage для хранения созданных заказов
         const orders = JSON.parse(localStorage.getItem('freeOrders')) || [];
 
         const toStorage = () => {
             localStorage.setItem('freeOrders', JSON.stringify(orders));
         };
 
-        // функция составления таблицы с заказами из вышесозданного массива
+        // счетчик  времени, оставшегося до сдачи заказа
+        const deadlineCalc = (deadline) => {
+             const targetDate = new Date(deadline);
+             const curDate = new Date();
+             const day = Math.ceil(Math.abs(curDate - targetDate) / (1000 * 3600 * 24));
+
+            const declOfNum = (n, t) => t[ (n%100>4 && n%100<20)? 2 : [2, 0, 1, 1, 1, 2][(n%10<5)?n%10:5] ];
+
+            return day + ' ' + declOfNum(day, ['день', 'дня', 'дней']);
+        };
+
+        // рендерим строки таблицы с заказами
         const renderOrders = () => {
 
             ordersTable.textContent = '';
@@ -30,52 +42,59 @@ document.addEventListener('DOMContentLoaded', () => {
                                 <td>${i+1}</td>
                                 <td>${order.title}</td>
                                 <td class="${order.currency}"></td>
-                                <td>${order.deadline}</td>
+                                <td>${deadlineCalc(order.deadline)}</td>
                         </tr>`;
                 });
         };
 
+        // обработка кликов в модальных окнах
         const handlerModal = (event) => {
                 const target = event.target;
                 const modal = target.closest('.order-modal');
                 const order = orders[modal.id];
 
+                // создаем функцию, чтобы соблюсти принцип 'DRY'
                 const baseAction = () => {
                     modal.style.display = 'none';
                     toStorage();
                     renderOrders();
                 }
 
+                // закрываем модальное окно
                 if (target.closest('.close') || target === modal) {
                     modal.style.display = 'none';
                 }
 
+                // берем заказ в работу
                 if (target.classList.contains('get-order')) {
                     order.active = true;
                     baseAction();
                 }
 
+                // отказываемся от выполнения
                 if (target.id === 'capitulation') {
                     order.active = false;
                     baseAction();
                 }
 
+                // отмечаем заказ как выполненный и удаляем его
                 if (target.id === 'ready') {
                     orders.splice(orders.indexOf(order), 1);
                     baseAction();
                 }
         }
 
-        // функция для открытия модального окна с заказами
+        // функция для открытия модальных окон
         const openModal = (numberOrder) => {
             const order = orders[numberOrder];
 
-            // деструктуризация
+            // деструктуризация для извлечения всей информации из заказа
             const { title, firstName, email, phone, description, amount, currency, deadline, active = false } = order;
 
+            // открываем модальное окно в зависимости от состояния заказа
             const modal = active ? modalOrderActive : modalOrder;
 
-            // получаем элементы модального окна по классам
+            // получаем элементы модального окна (информация о заказе) по классам
             const firstNameBlock = modal.querySelector('.firstName');
             const titleBlock = modal.querySelector('.modal-title');
             const emailBlock = modal.querySelector('.email');
@@ -92,7 +111,7 @@ document.addEventListener('DOMContentLoaded', () => {
             emailBlock.textContent = email;
             emailBlock.href = 'mailto:' + email;
             descriptionBlock.textContent = description;
-            deadlineBlock.textContent = deadline;
+            deadlineBlock.textContent = deadlineCalc(deadline);
             currencyBlock.className = 'currency_img';
             currencyBlock.classList.add(currency);
             countBlock.textContent = amount;
@@ -101,10 +120,11 @@ document.addEventListener('DOMContentLoaded', () => {
 
             modal.style.display = 'flex';
 
+            // обработчик событий внутри модального окна
             modal.addEventListener('click', handlerModal);
         };
 
-        // функция делегирования
+        // функция делегирования, обработчик клика по выбранному заказу
         ordersTable.addEventListener('click', (event) => {
             const target = event.target;
             const targetOrder = target.closest('.order');
@@ -113,7 +133,7 @@ document.addEventListener('DOMContentLoaded', () => {
                     }
         })
 
-        // обработчики события 
+        // обработчики кликов по кнопкам
         customer.addEventListener('click', () => {
             blockChoice.style.display = 'none';
             blockCustomer.style.display = 'block';
@@ -173,8 +193,10 @@ document.addEventListener('DOMContentLoaded', () => {
             // очистка формы
             formCustomer.reset();
 
+            // добавляем новый заказ
             orders.push(obj);
 
+            // сохранение заказов в Local Storage
             toStorage();
 
         });
